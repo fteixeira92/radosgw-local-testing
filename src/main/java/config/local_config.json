@@ -1,33 +1,28 @@
 {
-  "endpoint": "http://10.0.2.2:8000",
-  "admin-endpoint": "http://10.0.2.2:8000/admin",
+  "endpoint": "http://127.0.0.1:8000",
+  "admin-endpoint": "http://127.0.0.1:8000/admin",
   "region": "eu-central-1",
   "object-path": "src/main/java/object/",
   "users": [
     {
       "name": "nano",
-      "access-key": "0QAA9O6K21E5IO5W15O1",
-      "secret-key": "FA5AHNhajL4Yk7AUogajxDWyckIS7fcoHnTgzKTB"
+      "access-key": "GFZN9T55QQB0ZAP3MFZK",
+      "secret-key": "hjwZHVPV2dgg8nETdF4ODLOSrfugqMB5z0sHJa39"
     },
     {
       "name": "sbd.zhh2.dev",
-      "access-key": "ZFAX2TSNHAA3YJKHE1Y8",
-      "secret-key": "fZhZSi1W4uZ0nAP22nYnzK8eQ8zxOlyeexSBfBza"
-    },
-    {
-      "name": "sbd.test",
-      "access-key": "710VVVXLNJ43ZPVI8N1D",
-      "secret-key": "0n645Fx5DQb4aW9Coo20p9A1zRWov3snUgmJqit3"
+      "access-key": "WSZ82Z18WE0F56DEUSA8",
+      "secret-key": "E1UWsgrQTfQYGu9orx55rVmpDRHjVH4zf9bZYWtb"
     },
     {
       "name": "sbd.zhh2.dev.navis1",
-      "access-key": "FR3N4WMYFQ035QCJCB2E",
-      "secret-key": "M0QKtrcSiWROCQggXAxsXYtQnnR0dqEN8wG07xEX"
+      "access-key": "X3WB0VTB73505F6V5O7C",
+      "secret-key": "AKNWiYNmAbWeb7W0D6kKnzr1C2jMx92yIXAU8Hw7"
     },
     {
-      "name": "sbd.zhh2.dev.navis-2",
-      "access-key": "TKUI8NR9OJ3F982HSXON",
-      "secret-key": "9WLBmPbYmIiYBqjlAa7qCQmasbrVu177QgWqnfpc"
+      "name": "sbd.zhh2.dev.navis2",
+      "access-key": "Q394YLXTHO5BRUOQ9WWM",
+      "secret-key": "34On8gngFTRCoPWp4ykhQfCOhD9Oy1WSjjlnyZdz"
     },
     {
       "name": "sbd.zhh2.dev.navis-3",

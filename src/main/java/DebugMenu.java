@@ -26,7 +26,9 @@ public class DebugMenu {
         while (true) {
             System.out.println("Login as user (empty user to quit):");
             String userKey = stdIn.nextLine();
-            if (userKey.equals("")) break;
+            if (userKey.equals("")) {
+                break;
+            }
             if (!userKey.equals("nano")) {
                 userKey = "sbd.zhh2." + userKey;
             }
@@ -40,7 +42,7 @@ public class DebugMenu {
     public static void mainMenu(S3Client s3Client, RgwAdminClient rgwAdminClient, String objectsPath) {
         int option;
         do {
-            System.out.println("Logged in as \"" + s3Client.gerUserName() + "\"");
+            System.out.println("Logged in as \"" + s3Client.getUsername() + "\"");
             System.out.println(SPACER);
             System.out.println("Choose one of the following options:");
             System.out.println("1 - Bucket operations");
@@ -85,6 +87,9 @@ public class DebugMenu {
             System.out.println("6 - Revoke all permissions from user to a bucket");
             System.out.println("7 - Remove non empty bucket");
             System.out.println("8 - Remove all buckets");
+            System.out.println("9 - Disable bucket ACLs");
+            System.out.println("10 - Set lifecycle configuration");
+            System.out.println("11 - Print lifecycle configuration");
             System.out.println("0 - Return to previous menu");
             option = getMenuOption();
 
@@ -139,6 +144,42 @@ public class DebugMenu {
                 case 8:
                     menuOptionEnter(s3Client::removeAllBuckets);
                     break;
+                case 9:
+                    menuOptionEnter("Insert bucket name", "ACL successfully disabled!", () -> {
+                        String bucketName = stdIn.nextLine();
+                        System.out.println("Insert user name:");
+                        String userId = stdIn.nextLine();
+                        s3Client.disableUserPolicyControl(bucketName, userId);
+                    });
+                    break;
+                case 10:
+                    menuOptionEnter("Insert bucket name", () -> {
+//                        String bucketName = stdIn.nextLine();
+//                        System.out.println("Expiration year:");
+                        int year = 2022;
+//                        int year = Integer.parseInt(stdIn.nextLine());
+//                        System.out.println("Expiration month:");
+                        int month = 11;
+//                        int month = Integer.parseInt(stdIn.nextLine());
+//                        System.out.println("Expiration day:");
+                        int day = 2;
+//                        int day = Integer.parseInt(stdIn.nextLine());
+//                        System.out.println("Expiration hour:");
+//                        int hour = Integer.parseInt(stdIn.nextLine());
+                        int hour = 11;
+//                        System.out.println("Expiration minute:");
+//                        int minute = Integer.parseInt(stdIn.nextLine());
+                        int minute = 0;
+//                        s3Client.setLifecycleConfiguration(bucketName, year, month, day, hour, minute);
+                        s3Client.lifecycle();
+                    });
+                    break;
+                case 11:
+                    menuOptionEnter("Insert bucket name", "Lifecycle configuration set!", () -> {
+                        String bucketName = stdIn.nextLine();
+                        s3Client.printLifecycleConfiguration(bucketName);
+                    });
+                    break;
                 case 0:
                     break;
                 default:
@@ -156,7 +197,8 @@ public class DebugMenu {
             System.out.println("2 - Remove object from bucket");
             System.out.println("3 - List all objects from bucket");
             System.out.println("4 - List all objects from all buckets");
-            System.out.println("5 - Save object to file");
+            System.out.println("5 - Get object from bucket and Save it to file");
+            System.out.println("6 - Print object's ACL");
             System.out.println("0 - Return to previous menu");
             option = getMenuOption();
 
@@ -187,13 +229,22 @@ public class DebugMenu {
                     menuOptionEnter(() -> s3Client.getBucketList().forEach(bucket -> s3Client.printBucketObjectList(bucket.getName())));
                     break;
                 case 5:
-                    menuOptionEnter("Insert target bucket name\"", "Object successfully saved!", () -> {
+                    menuOptionEnter("Insert target bucket name", "Object successfully saved!", () -> {
                         String bucketName = stdIn.nextLine();
                         System.out.println("Insert target object name:");
                         String objectName = stdIn.nextLine();
                         System.out.println("Insert destiny file name:");
                         String destinyFile = stdIn.nextLine();
                         s3Client.saveObjectToFile(bucketName, objectName, objectsPath + destinyFile);
+                    });
+                    break;
+                case 6:
+                    menuOptionEnter("Insert target bucket name", () -> {
+                        String bucketName = stdIn.nextLine();
+                        System.out.println("Insert target object name:");
+                        String objectName = stdIn.nextLine();
+                        System.out.println("\n\n");
+                        s3Client.printObjectACL(bucketName, objectName);
                     });
                     break;
                 case 0:
@@ -214,7 +265,10 @@ public class DebugMenu {
             System.out.println("3 - List user capabilities");
             System.out.println("4 - Create new user");
             System.out.println("5 - Remove user");
-            System.out.println("6 - List all buckets cluster");
+            System.out.println("6 - Modify user");
+            System.out.println("7 - Rotate user keys");
+            System.out.println("8 - List all buckets cluster");
+            System.out.println("9 - Rotate 100");
             System.out.println("0 - Return to previous menu");
             option = getMenuOption();
 
@@ -249,8 +303,26 @@ public class DebugMenu {
                     });
                     break;
                 case 6:
+                    menuOptionEnter("Insert user name:", "User successfully modified!", () -> {
+                        String username = stdIn.nextLine();
+                        rgwAdminClient.modifyUser(username, rgwAdminClient.getUserParams(stdIn));
+                    });
+                    break;
+                case 7:
+                    menuOptionEnter("Insert user name:", "User keys rotated!", () -> {
+                        String username = stdIn.nextLine();
+                        rgwAdminClient.rotateUserKey(username);
+                    });
+                    break;
+                case 8:
                     menuOptionEnter(() -> {
                         rgwAdminClient.getBucketList().forEach(System.out::println);
+                    });
+                    break;
+                case 9:
+                    menuOptionEnter("Insert user name:", "User keys rotated!", () -> {
+                        String username = stdIn.nextLine();
+                        rgwAdminClient.rotate100(username);
                     });
                     break;
                 case 0:
@@ -276,21 +348,21 @@ public class DebugMenu {
             switch (option) {
                 case 1:
                     menuOptionEnter(
-                            "Insert bucket name:",
-                            "Bucket policy successfully created",
-                            () -> {
-                                String bucketName = stdIn.nextLine();
-                                s3Client.setBucketPolicy(bucketName);
-                            });
+                        "Insert bucket name:",
+                        "Bucket policy successfully created",
+                        () -> {
+                            String bucketName = stdIn.nextLine();
+                            //                            s3Client.setBucketPolicy(bucketName);
+                        });
                     break;
                 case 2:
                     menuOptionEnter(
-                            "Insert bucket name:",
-                            "Bucket policy successfully removed!",
-                            () -> {
-                                String bucketName = stdIn.nextLine();
-                                s3Client.deleteBucketPolicy(bucketName);
-                            });
+                        "Insert bucket name:",
+                        "Bucket policy successfully removed!",
+                        () -> {
+                            String bucketName = stdIn.nextLine();
+                            s3Client.deleteBucketPolicy(bucketName);
+                        });
                     break;
                 case 3:
                     menuOptionEnter("Insert bucket name:", () -> {
@@ -383,10 +455,11 @@ public class DebugMenu {
 
     public static S3Client getS3Client(String userKey, LocalConfig config) {
         return new S3Client(config.get("endpoint"), config.get("region"), config.getUserKey(userKey, "access-key"),
-                config.getUserKey(userKey, "secret-key"));
+            config.getUserKey(userKey, "secret-key"));
     }
 
     public static RgwAdminClient getRgwAdmin(String adminKey, LocalConfig config) {
-        return new RgwAdminClient(config.get("admin-endpoint"), config.getUserKey(adminKey, "access-key"), config.getUserKey(adminKey, "secret-key"));
+        return new RgwAdminClient(config.get("admin-endpoint"), config.getUserKey(adminKey, "access-key"),
+            config.getUserKey(adminKey, "secret-key"));
     }
 }
